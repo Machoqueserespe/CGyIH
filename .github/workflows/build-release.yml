@@ -34,8 +34,9 @@ jobs:
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\include\GLFW\glfw3.h" include\glfw3.h -Force
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\include\GLFW\glfw3native.h" include\glfw3native.h -Force
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\glew32.lib" lib\glew32.lib -Force
-          Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\glfw3.lib" lib\glfw3.lib -Force
+          Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\glfw3dll.lib" lib\glfw3.lib -Force
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin\glew32.dll" glew32.dll -Force
+          Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin\glfw3.dll" glfw3.dll -Force
 
       - name: Compilar solución
         run: msbuild Practica1.sln /m /p:Configuration=Release /p:Platform=x64
@@ -44,9 +45,10 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item glew32.dll x64/Release/glew32.dll -Force
+          Copy-Item glfw3.dll x64/Release/glfw3.dll -Force
           git config user.name "Alan Rogelio Barrientos Ramírez"
           git config user.email "Machoqueserespe@users.noreply.github.com"
-          git add -f x64/Release/Practica1.exe x64/Release/glew32.dll
+          git add -f x64/Release/Practica1.exe x64/Release/glew32.dll x64/Release/glfw3.dll
           if (-not (git diff --cached --quiet)) {
             git commit -m "Agregar ejecutables de Release"
             git push origin practica-1
