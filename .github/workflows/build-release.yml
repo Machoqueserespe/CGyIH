@@ -36,20 +36,18 @@ jobs:
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\glew32.lib" lib\glew32.lib -Force
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\glfw3dll.lib" lib\glfw3.lib -Force
           Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin\glew32.dll" glew32.dll -Force
-          Copy-Item "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin\glfw3.dll" glfw3.dll -Force
 
       - name: Compilar solución
         run: msbuild Practica1.sln /m /p:Configuration=Release /p:Platform=x64
 
-      - name: Guardar ejecutables de Release
+      - name: Guardar archivos de Release
         shell: pwsh
         run: |
-          Copy-Item glew32.dll x64/Release/glew32.dll -Force
-          Copy-Item glfw3.dll x64/Release/glfw3.dll -Force
           git config user.name "Alan Rogelio Barrientos Ramírez"
           git config user.email "Machoqueserespe@users.noreply.github.com"
-          git add -f x64/Release/Practica1.exe x64/Release/glew32.dll x64/Release/glfw3.dll
+          git rm --ignore-unmatch x64/Release/glew32.dll x64/Release/glfw3.dll
+          git add -f x64/Release/Practica1.exe x64/Release/Practica1.pdb
           if (-not (git diff --cached --quiet)) {
-            git commit -m "Agregar ejecutables de Release"
+            git commit -m "Corregir archivos de la carpeta Release"
             git push origin practica-1
           }
