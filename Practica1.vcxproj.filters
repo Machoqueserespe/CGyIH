@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup><Filter Include="Archivos de código fuente"><UniqueIdentifier>{C649DEE8-AC91-4D92-843C-9AF6BBF9B0A3}</UniqueIdentifier><Extensions>cpp;c;cc;cxx</Extensions></Filter></ItemGroup>
+  <ItemGroup><ClCompile Include="main.cpp"><Filter>Archivos de código fuente</Filter></ClCompile></ItemGroup>
+</Project>
