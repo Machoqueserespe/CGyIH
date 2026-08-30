@@ -1,0 +1,43 @@
+name: Compilar Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - practica-1
+    paths:
+      - main.cpp
+      - Practica1.sln
+      - Practica1.vcxproj
+      - include/**
+      - lib/**
+      - glew32.dll
+      - .github/workflows/build-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: practica-1
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Compilar solución
+        run: msbuild Practica1.sln /m /p:Configuration=Release /p:Platform=x64
+
+      - name: Guardar ejecutables de Release
+        shell: pwsh
+        run: |
+          Copy-Item glew32.dll x64/Release/glew32.dll -Force
+          git config user.name "Alan Rogelio Barrientos Ramírez"
+          git config user.email "Machoqueserespe@users.noreply.github.com"
+          git add -f x64/Release/Practica1.exe x64/Release/glew32.dll
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "Agregar ejecutables de Release"
+            git push origin practica-1
+          }
