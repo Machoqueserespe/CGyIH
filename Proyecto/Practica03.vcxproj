@@ -31,6 +31,9 @@
     <PostBuildEvent><Command>copy /Y "$(SolutionDir)glew32.dll" "$(OutDir)glew32.dll"&#xD;&#xA;xcopy /E /I /Y "$(SolutionDir)shaders" "$(OutDir)shaders"</Command></PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <!-- Genero los simbolos de depuracion junto al ejecutable de Release. -->
+    <ClCompile><DebugInformationFormat>ProgramDatabase</DebugInformationFormat></ClCompile>
+    <Link><GenerateDebugInformation>DebugFull</GenerateDebugInformation><ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile></Link>
     <ClCompile><WarningLevel>Level3</WarningLevel><FunctionLevelLinking>true</FunctionLevelLinking><IntrinsicFunctions>true</IntrinsicFunctions><SDLCheck>true</SDLCheck><PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions><AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><LanguageStandard>stdcpp17</LanguageStandard><AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions></ClCompile>
     <Link><SubSystem>Console</SubSystem><EnableCOMDATFolding>true</EnableCOMDATFolding><OptimizeReferences>true</OptimizeReferences><AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories><AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
     <PostBuildEvent><Command>copy /Y "$(SolutionDir)glew32.dll" "$(OutDir)glew32.dll"&#xD;&#xA;xcopy /E /I /Y "$(SolutionDir)shaders" "$(OutDir)shaders"</Command></PostBuildEvent>
@@ -44,5 +47,4 @@
   <PropertyGroup><LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory></PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
-
 

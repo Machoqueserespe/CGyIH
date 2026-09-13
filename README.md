@@ -17,14 +17,12 @@ El cohete está construido con instancias de cilindros, conos, esferas, cubos y 
 - [Reporte en PDF](Reporte/R03-422022019.pdf).
 - [ZIP del código](Entrega/P03-422022019.zip).
 - [Main de los dos ejercicios](Proyecto/practica3.cpp).
-- [ZIP independiente de shaders](Entrega/Shaders-P03-422022019.zip).
-- [Shaders sueltos](Entrega/shaders).
 
 ### Ejecución
 
 Abrir `Proyecto/Practica03.sln` en Visual Studio con desarrollo de escritorio en C++, seleccionar `Release | x64` y ejecutar con Ctrl + F5. El proyecto contiene un solo main.
 
-El PDF, el ZIP del código y los shaders se entregan por separado. Si se descargan los ZIP, extraer primero el código y después el ZIP de shaders dentro de `Proyecto`, para obtener `Proyecto/shaders`. El repositorio ya conserva esa carpeta para ejecutar directamente.
+El PDF y el ZIP del código se entregan por separado. Para ejecutar el código del ZIP, copiar los shaders originales de clase en `Proyecto/shaders`. El repositorio ya conserva esa carpeta para ejecutar directamente. No hay shaders nuevos ni modificados.
 
 | Tecla | Acción |
 |---|---|
