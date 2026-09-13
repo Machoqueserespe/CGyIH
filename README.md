@@ -15,15 +15,16 @@ El cohete está construido con instancias de cilindros, conos, esferas, cubos y 
 ### Entrega
 
 - [Reporte en PDF](Reporte/R03-422022019.pdf).
-- [Paquete completo: reporte, proyecto y shaders](Entrega/P03-422022019.zip).
+- [ZIP del código](Entrega/P03-422022019.zip).
 - [Main de los dos ejercicios](Proyecto/practica3.cpp).
 - [ZIP independiente de shaders](Entrega/Shaders-P03-422022019.zip).
-- [Cambios y justificación](CAMBIOS.md), incluida la inclinación P12 que cierra el rombo.
-- [Comparación con el código del profesor](CAMBIOS-respecto-al-profesor.diff).
+- [Shaders sueltos](Entrega/shaders).
 
 ### Ejecución
 
-Abrir `Proyecto/Practica03.sln` en Visual Studio con desarrollo de escritorio en C++, seleccionar `Release | x64` y ejecutar con Ctrl + F5. El proyecto contiene un solo main. Si se utiliza otro proyecto, copiar también los archivos auxiliares modificados: `Mesh.cpp`, `Window.cpp` y `Shader.cpp`.
+Abrir `Proyecto/Practica03.sln` en Visual Studio con desarrollo de escritorio en C++, seleccionar `Release | x64` y ejecutar con Ctrl + F5. El proyecto contiene un solo main.
+
+El PDF, el ZIP del código y los shaders se entregan por separado. Si se descargan los ZIP, extraer primero el código y después el ZIP de shaders dentro de `Proyecto`, para obtener `Proyecto/shaders`. El repositorio ya conserva esa carpeta para ejecutar directamente.
 
 | Tecla | Acción |
 |---|---|
@@ -33,7 +34,7 @@ Abrir `Proyecto/Practica03.sln` en Visual Studio con desarrollo de escritorio en
 | E / R / T | Girar en X / Y / Z |
 | Esc | Cerrar |
 
-Se conservan las clases y funciones de dibujo del ejemplo. Las modificaciones están marcadas en el código y explicadas en el reporte; los cuatro shaders mantienen su contenido original.
+Las modificaciones están explicadas en comentarios dentro del código. Se utilizan `shader.vert`, `shadercolor.vert` y `shader.frag`.
 
 ### Capturas
 

@@ -1,7 +1,5 @@
-// PRACTICA 03 - Cohete espacial y piramides de cinco colores.
-// Base: practica3.cpp proporcionado por el profesor.
-// Adiciones y correcciones P01-P12 explicadas en CAMBIOS.md.
-// No se incorporan clases ni funciones de dibujo nuevas.
+// Practica 03 - Cohete espacial y union de ocho piramides.
+// Alan Rogelio Barrientos Ramirez - 422022019
 
 //práctica 3: Modelado Geométrico y Cámara Sintética.
 #include <stdio.h>
@@ -38,7 +36,7 @@ Camera camera;
 Window mainWindow;
 vector<Mesh*> meshList;
 vector<Shader>shaderList;
-// P01: MeshColor ya esta declarada en Mesh.h del profesor.
+// Uso MeshColor para asignar un color distinto a cada cara de la piramide.
 MeshColor piramideColor;
 //Vertex Shader
 static const char* vShader = "shaders/shader.vert";
@@ -136,8 +134,8 @@ void CrearPiramideCuadrangular()
 	piramidec->CreateMesh(piramidecuadrangular_vertices, piramidecuadrangular_indices, 15, 18);
 	meshList.push_back(piramidec);
 
-	// P01: las mismas posiciones e indices se expanden por cara.
-	// Cada vertice de una cara recibe el mismo RGB para evitar degradados.
+	// Repito los vertices por cara para asignarles un color uniforme.
+	// Conservo las posiciones de la piramide y doy el mismo RGB a cada triangulo.
 	// Orden: frontal roja, izquierda verde, trasera amarilla,
 	// derecha magenta y los dos triangulos de la base azul.
 	GLfloat verticesPiramideColor[] = {
@@ -252,9 +250,9 @@ void CrearCilindro(int res, float R) {
 	}
 
 	//Se generan los indices de los vértices
-	// P02: el original indexaba componentes float y dibujaba todo como un abanico.
-	// ORIGINAL: for (i = 0; i < vertices.size(); i++) indices.push_back(i);
-	// Dos triangulos por sector de la pared; se reutilizan los vertices originales.
+	// Corrijo los indices para recorrer vertices, no componentes del arreglo.
+	// Antes: for (i = 0; i < vertices.size(); i++) indices.push_back(i);
+	// Formo dos triangulos por sector para dibujar la pared con RenderMesh.
 	for (i = 0; i < res; i++) {
 		indices.push_back(2 * i); indices.push_back(2 * i + 1); indices.push_back(2 * i + 2);
 		indices.push_back(2 * i + 1); indices.push_back(2 * i + 3); indices.push_back(2 * i + 2);
@@ -305,14 +303,14 @@ void CrearCono(int res,float R) {
 			}
 		}
 	}
-	// P03: el ciclo ya cierra la circunferencia; se omite el vertice extra incorrecto.
-	// ORIGINAL: vertices.push_back(R * cos(0) * dt);
-	// ORIGINAL: vertices.push_back(-0.5);
-	// ORIGINAL: vertices.push_back(R * sin(0) * dt);
+	// Quito este punto extra porque el ciclo ya cierra la circunferencia.
+	// vertices.push_back(R * cos(0) * dt);
+	// vertices.push_back(-0.5);
+	// vertices.push_back(R * sin(0) * dt);
 
 
-	// P03: triangulos laterales y tapa, sin agregar funciones.
-	// ORIGINAL: for (i = 0; i < res+2; i++) indices.push_back(i);
+	// Formo los triangulos laterales y agrego la tapa para cerrar el cono.
+	// Antes: for (i = 0; i < res+2; i++) indices.push_back(i);
 	for (i = 0; i < res; i++) {
 		indices.push_back(0); indices.push_back(i + 2); indices.push_back(i + 1);
 	}
@@ -322,7 +320,8 @@ void CrearCono(int res,float R) {
 
 	//se genera el mesh del cono
 	Mesh *cono = new Mesh();
-	// P03 ORIGINAL: cono->CreateMeshGeometry(vertices, indices, vertices.size(), res + 2);
+	// Uso el total de indices de las caras y la tapa.
+	// Antes: cono->CreateMeshGeometry(vertices, indices, vertices.size(), res + 2);
 	cono->CreateMeshGeometry(vertices, indices, vertices.size(), indices.size());
 	meshList.push_back(cono);
 }
@@ -344,15 +343,18 @@ void CreateShaders()
 int main()
 {
 	mainWindow = Window(800, 600);
-	// P04 ORIGINAL: mainWindow.Initialise();
+	// Detengo el programa si falla la inicializacion de la ventana.
+	// Antes: mainWindow.Initialise();
 	if (mainWindow.Initialise() != 0) return 1;
 	//Cilindro y cono reciben resolución (slices, rebanadas) y Radio de circunferencia de la base y tapa
 
 	CrearCubo();//índice 0 en MeshList
 	CrearPiramideTriangular();//índice 1 en MeshList
-	// P05 ORIGINAL: CrearCilindro(5, 1.0f); Se aumenta la resolucion circular.
+	// Aumento a 48 sectores para suavizar el contorno del cilindro.
+	// Antes: CrearCilindro(5, 1.0f);
 	CrearCilindro(48, 1.0f);//índice 2 en MeshList
-	// P05 ORIGINAL: CrearCono(25, 2.0f); Radio unitario para escalar las instancias.
+	// Uso 48 sectores y radio 1 para ajustar el cono con la escala de cada pieza.
+	// Antes: CrearCono(25, 2.0f);
 	CrearCono(48, 1.0f);//índice 3 en MeshList
 	CrearPiramideCuadrangular();//índice 4 en MeshList
 	CreateShaders();
@@ -388,7 +390,7 @@ int main()
 
 	glm::vec3 color = glm::vec3(0.0f,0.0f,0.0f); //inicializar Color para enviar a variable Uniform;
 
-	// P06: 1 cohete; 2 union de ocho piramides; 3 piramide individual.
+	// Cambio de escena con 1, 2 y 3 para mostrar ambos ejercicios en el mismo main.
 	int escena = 1;
 	while (!mainWindow.getShouldClose())
 	{
@@ -407,7 +409,8 @@ int main()
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		//Limpiar la ventana
-		// P07 ORIGINAL: glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// Uso un fondo azul oscuro para distinguir las piezas claras.
+		// Antes: glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClearColor(0.055f, 0.070f, 0.105f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Se agrega limpiar el buffer de profundidad
 		shaderList[0].useShader();
@@ -416,8 +419,8 @@ int main()
 		uniformView = shaderList[0].getViewLocation();
 		uniformColor = shaderList[0].getColorLocation();
 		
-		// P08: se repite el bloque de transformacion y dibujo del profesor.
-		// El original completo se conserva en Original del profesor/practica3.cpp.
+		// Repito el bloque de transformaciones y dibujo para cada pieza.
+		// Ajusto el tamano con model y conservo la perspectiva y relacion de aspecto.
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
@@ -693,14 +696,18 @@ int main()
 		}
 
 		if (escena == 2) {
-			// P12: rombo tridimensional cerrado, formado por OCHO piramides.
-			// Cuatro bases cuadradas ocupan los cuatro cuadrantes del plano Y = 0.
-			// Las superiores comparten la punta (0, 1, 0).
-			// Las inferiores comparten la punta (0, -1, 0).
-			// Las piramides conservan su base cuadrada, pero quedan oblicuas:
-			// se inclina cada punta hacia el centro con giros y escala del ejemplo.
-			// El giro-escala-giro equivale a x' = x - y/sqrt(2), y' = y.
-			// Su calculo y las coordenadas de union se explican en CAMBIOS.md.
+			// Acomodo cuatro piramides arriba y cuatro abajo para cerrar el rombo.
+			// Inclino cada piramide: la base sigue cuadrada y la punta queda sobre una esquina.
+			// Para conseguirlo uso giro, escala y giro, que equivalen a un cizallamiento:
+			// x' = x - y/sqrt(2), y' = y, z' = z.
+			// Los valores 1.41421356 y 0.70710678 son sqrt(2) y 1/sqrt(2).
+			// El angulo 35.26438968 es atan(1/sqrt(2)); 54.73561032 es su complementario.
+			// La matriz local combina Rz(-35.26438968), S(sqrt(2),1/sqrt(2),1)
+			// y Rz(54.73561032). Los giros en Y orientan la inclinacion al cuadrante.
+			// Traslado las superiores con (+/-0.25, 0.5, +/-0.25).
+			// Sus bases de lado 1 cubren Y = 0 y comparten la punta (0, 1, 0).
+			// Giro las otras cuatro 180 grados en Z para compartir la punta (0, -1, 0).
+			// Las bases azules quedan dentro; uso la escena 3 para revisar todos los colores.
 			shaderList[1].useShader();
 			uniformModel = shaderList[1].getModelLocation();
 			uniformProjection = shaderList[1].getProjectLocation();
@@ -857,7 +864,7 @@ int main()
 
 
 		if (escena == 3) {
-			// P01: prueba de una piramide completa, no una cara suelta.
+			// Muestro una piramide por separado para revisar sus cuatro caras y la base azul.
 			shaderList[1].useShader();
 			uniformModel = shaderList[1].getModelLocation();
 			uniformProjection = shaderList[1].getProjectLocation();

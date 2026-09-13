@@ -2,7 +2,7 @@
 
 Window::Window()
 {
-	// P10: inicializacion de atributos existentes; no se agregan miembros.
+	// Inicializo las rotaciones y los datos del raton para evitar valores indeterminados.
 	mainWindow = nullptr;
 	rotax = rotay = rotaz = 0.0f;
 	lastX = lastY = xChange = yChange = 0.0f;
@@ -16,7 +16,7 @@ Window::Window()
 }
 Window::Window(GLint windowWidth, GLint windowHeight)
 {
-	// P10: inicializacion de atributos existentes; no se agregan miembros.
+	// Inicializo las rotaciones y los datos del raton antes de abrir la ventana.
 	mainWindow = nullptr;
 	rotax = rotay = rotaz = 0.0f;
 	lastX = lastY = xChange = yChange = 0.0f;
@@ -48,6 +48,7 @@ int Window::Initialise()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	//CREAR VENTANA
+	// Incluyo las teclas de las escenas en el titulo de la ventana.
 	mainWindow = glfwCreateWindow(width, height, "CGeIH | 1: cohete | 2: union | 3: piramide | E/R/T: rotar", NULL, NULL);
 
 	if (!mainWindow)
@@ -84,7 +85,7 @@ int Window::Initialise()
 	glViewport(0, 0, bufferWidth, bufferHeight);
 	//Callback para detectar que se está usando la ventana
 	glfwSetWindowUserPointer(mainWindow, this);
-	// P10: Initialise devuelve int; el caso correcto tambien necesita retorno.
+	// Devuelvo 0 para indicar que la ventana se inicializo correctamente.
 	return 0;
 }
 

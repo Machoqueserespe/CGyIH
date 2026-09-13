@@ -65,8 +65,8 @@ void Mesh::CreateMeshGeometry(std::vector<GLfloat>& vertices, std::vector<unsign
 
 void MeshColor::CreateMeshColor(GLfloat *vertices, unsigned int numOfVertices)
 {
-	// P09 ORIGINAL: vertexCount = numOfVertices;
-	// Cada vertice contiene 6 floats: XYZ y RGB. glDrawArrays necesita vertices.
+	// Antes: vertexCount = numOfVertices;
+	// Divido entre 6 porque cada vertice tiene XYZ y RGB; glDrawArrays cuenta vertices.
 	vertexCount = numOfVertices / 6;
 	glGenVertexArrays(1, &VAO); //generar 1 VAO
 	glBindVertexArray(VAO);//asignar VAO
@@ -154,4 +154,3 @@ MeshColor::~MeshColor()
 {
 	ClearMeshColor();
 }
-

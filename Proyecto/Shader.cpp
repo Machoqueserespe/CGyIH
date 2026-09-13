@@ -69,15 +69,16 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 		printf("EL error al linkear es: %s \n", eLog);
 		return;
 	}
-	// P11: no validar antes de enlazar un VAO. Se conserva la comprobacion de enlace.
-// ORIGINAL: 	glValidateProgram(shaderID);
-// ORIGINAL: 	glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
-// ORIGINAL: 	if (!result)
-// ORIGINAL: 	{
-// ORIGINAL: 		glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-// ORIGINAL: 		printf("EL error al validar es: %s \n", eLog);
-// ORIGINAL: 		return;
-// ORIGINAL: 	}
+	// Comento esta validacion porque todavia no hay un VAO enlazado.
+	// Mantengo las comprobaciones de compilacion y enlace para detectar errores del shader.
+	// glValidateProgram(shaderID);
+	// glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
+	// if (!result)
+	// {
+	//     glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
+	//     printf("EL error al validar es: %s \n", eLog);
+	//     return;
+	// }
 
 
 	uniformModel = glGetUniformLocation(shaderID, "model");
@@ -150,4 +151,3 @@ Shader::~Shader()
 {
 	ClearShader();
 }
-
