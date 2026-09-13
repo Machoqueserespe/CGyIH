@@ -15,14 +15,15 @@ El cohete está construido con instancias de cilindros, conos, esferas, cubos y 
 ### Entrega
 
 - [Reporte en PDF](Reporte/R03-422022019.pdf).
-- [ZIP del código](Entrega/P03-422022019.zip).
+- [ZIP de Release: ejecutable y PDB](Entrega/P03-422022019.zip).
+- [Archivos de salida](x64/Release).
 - [Main de los dos ejercicios](Proyecto/practica3.cpp).
 
 ### Ejecución
 
 Abrir `Proyecto/Practica03.sln` en Visual Studio con desarrollo de escritorio en C++, seleccionar `Release | x64` y ejecutar con Ctrl + F5. El proyecto contiene un solo main.
 
-El PDF y el ZIP del código se entregan por separado. Para ejecutar el código del ZIP, copiar los shaders originales de clase en `Proyecto/shaders`. El repositorio ya conserva esa carpeta para ejecutar directamente. No hay shaders nuevos ni modificados.
+El ZIP contiene únicamente `Practica03.exe` y `Practica03.pdb`, compilados en Windows como `Release | x64`. El PDF y el main se entregan por separado. Para ejecutar el EXE, conservar junto a él `glew32.dll` y la carpeta `shaders` del proyecto original; esas dependencias no están incluidas en el ZIP. No hay shaders nuevos ni modificados.
 
 | Tecla | Acción |
 |---|---|
