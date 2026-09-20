@@ -1,8 +1,6 @@
-/*Práctica 4: Modelado Jerárquico.
-Se implementa el uso de matrices adicionales para almacenar información de transformaciones geométricas que se quiere
-heredar entre diversas instancias para que estén unidas
-Práctica de laboratorio: Rover y sonda espacial.
-F1: rover. F2: sonda. Ambos ejercicios se dibujan desde este mismo main.
+/* Práctica 04: Rover y sonda espacial.
+Uso matrices auxiliares para que cada pieza siga el movimiento de su articulación.
+F1: rover. F2: sonda.
 F: giro de la base del brazo. G: hombro. H: codo. J: muñeca.
 K: abrir la pinza. L: articulación de la suspensión frontal.
 1, 2, 3: ruedas frontal, central y trasera del lado Z negativo.
@@ -16,38 +14,36 @@ Con Shift y la misma tecla invierto el sentido. WASD y ratón controlan la cáma
 #include<vector>
 #include <glew.h>
 #include <glfw3.h>
-//glm
+// Uso GLM para las matrices y las transformaciones.
 #include<glm.hpp>
 #include<gtc\matrix_transform.hpp>
 #include<gtc\type_ptr.hpp>
 #include <gtc\random.hpp>
-//clases para dar orden y limpieza al còdigo
+// Estas clases manejan las figuras, los shaders, la ventana y la cámara.
 #include"Mesh.h"
 #include"Shader.h"
 #include"Sphere.h"
 #include"Window.h"
 #include"Camera.h"
-//tecla E: Rotar sobre el eje X
-//tecla R: Rotar sobre el eje Y
-//tecla T: Rotar sobre el eje Z
 
 
 using std::vector;
 
-//Dimensiones de la ventana
-const float toRadians = 3.14159265f/180.0; //grados a radianes
+const float toRadians = 3.14159265f/180.0; // Factor para convertir grados a radianes.
 const float PI = 3.14159265f;
+// Uso el tiempo entre cuadros para actualizar el movimiento de la cámara.
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
-static double limitFPS = 1.0 / 60.0;
+static double limitFPS = 1.0 / 60.0; // Intervalo de referencia usado en el cálculo de deltaTime.
 Camera camera;
 Window mainWindow;
+// Guardo las mallas y los programas de shader para reutilizarlos al dibujar.
 vector<Mesh*> meshList;
 vector<Shader>shaderList;
-//Vertex Shader
+// Rutas de los archivos de vértices y fragmentos.
 static const char* vShader = "shaders/shader.vert";
 static const char* fShader = "shaders/shader.frag";
-Sphere sp = Sphere(1.0, 20, 20); //recibe radio, slices, stacks
+Sphere sp = Sphere(1.0, 20, 20); // Radio, divisiones alrededor y divisiones en altura.
 
 
 
@@ -92,7 +88,7 @@ void CrearCubo()
 	meshList.push_back(cubo);
 }
 
-// Pirámide triangular regular
+// Los índices indican qué tres vértices forman cada cara de la pirámide.
 void CrearPiramideTriangular()
 {
 	unsigned int indices_piramide_triangular[] = {
@@ -119,9 +115,9 @@ Crear cilindro y cono con arreglos dinámicos vector creados en el Semestre 2023
 */
 void CrearCilindro(int res, float R) {
 
-	//constantes utilizadas en los ciclos for
+	// n recorre la circunferencia e i recorre las coordenadas de cada vértice.
 	int n, i;
-	//cálculo del paso interno en la circunferencia y variables que almacenarán cada coordenada de cada vértice
+	// res es el número de segmentos, R es el radio y dt es el paso angular.
 	GLfloat dt = 2 * PI / res, x, z, y = -0.5f;
 
 	vector<GLfloat> vertices;
@@ -200,13 +196,12 @@ void CrearCilindro(int res, float R) {
 		}
 	}
 
-	// Conservo los vértices y conecto las paredes y las tapas con triángulos.
-	// Antes: for (i = 0; i < vertices.size(); i++) indices.push_back(i);
-	// vertices.size() cuenta coordenadas, no vértices; así evito índices fuera del arreglo.
+	// Uso dos triángulos por segmento para unir las paredes del cilindro.
 	for (i = 0; i < res; i++) {
 		indices.push_back(2 * i); indices.push_back(2 * i + 1); indices.push_back(2 * i + 2);
 		indices.push_back(2 * i + 1); indices.push_back(2 * i + 3); indices.push_back(2 * i + 2);
 	}
+	// Cierro cada tapa con triángulos que parten de su primer vértice.
 	for (i = 1; i < res - 1; i++) {
 		indices.push_back(2 * (res + 1));
 		indices.push_back(2 * (res + 1) + i + 1);
@@ -225,9 +220,9 @@ void CrearCilindro(int res, float R) {
 //función para crear un cono
 void CrearCono(int res,float R) {
 
-	//constantes utilizadas en los ciclos for
+	// n recorre la circunferencia e i recorre las coordenadas de cada vértice.
 	int n, i;
-	//cálculo del paso interno en la circunferencia y variables que almacenarán cada coordenada de cada vértice
+	// res es el número de segmentos, R es el radio y dt es el paso angular.
 	GLfloat dt = 2 * PI / res, x, z, y = -0.5f;
 	
 	vector<GLfloat> vertices;
@@ -306,16 +301,16 @@ void CreateShaders()
 
 int main()
 {
-	mainWindow = Window(1000, 800); // Amplío la ventana para ver el rover completo.
+	mainWindow = Window(1000, 800); // Ancho y alto de la ventana, en píxeles.
 	if (mainWindow.Initialise() != 0) return 1;
 	//Cilindro y cono reciben resolución (slices, rebanadas) y Radio de circunferencia de la base y tapa
 
 	CrearCubo();//índice 0 en MeshList
 	CrearPiramideTriangular();//índice 1 en MeshList
-	CrearCilindro(32, 1.0f);// Uso más segmentos para que ruedas y brazos se vean redondos.
+	CrearCilindro(32, 1.0f);// Índice 2: cilindro de 32 segmentos y radio 1.
 	CrearCono(25, 2.0f);//índice 3 en MeshList
 	CrearPiramideCuadrangular();//índice 4 en MeshList
-	// Dejo un VAO activo durante la validación del programa en el perfil core.
+	// Uso vaoValidacion para mantener un VAO activo mientras se valida el shader.
 	GLuint vaoValidacion;
 	glGenVertexArrays(1, &vaoValidacion);
 	glBindVertexArray(vaoValidacion);
@@ -324,39 +319,30 @@ int main()
 	glDeleteVertexArrays(1, &vaoValidacion);
 	
 
-	/*Cámara se usa el comando: glm::lookAt(vector de posición, vector de orientación, vector up));
-	En la clase Camera se reciben 5 datos:
-	glm::vec3 vector de posición,
-	glm::vec3 vector up,
-	GlFloat yaw rotación para girar hacia la derecha e izquierda
-	GlFloat pitch rotación para inclinar hacia arriba y abajo
-	GlFloat velocidad de desplazamiento,
-	GlFloat velocidad de vuelta o de giro
-	Se usa el Mouse y las teclas WASD y su posición inicial está en 0,0,1 y ve hacia 0,0,-1.
-	*/
-
-	// Alejo la cámara y la dirijo al centro del rover; no cambio sus proporciones.
+	// La cámara recibe posición, vector vertical, yaw, pitch y velocidades de movimiento y giro.
+	// La ubico frente al rover y la inclino para ver la cabina, las ruedas y el brazo.
 	camera = Camera(glm::vec3(-12.0f, 13.0f, 18.0f), glm::vec3(0.0f, 1.0f, 0.0f), -63.435f, -15.885f, 0.3f, 0.3f);
 
 	
+	// Estas variables guardan las ubicaciones de las matrices y el color dentro del shader.
 	GLuint uniformProjection = 0;
 	GLuint uniformModel = 0;
 	GLuint uniformView = 0;
 	GLuint uniformColor = 0;
+	// Uso el ancho entre el alto del área de dibujo para conservar las proporciones.
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f)	,mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
-	//glm::mat4 projection = glm::ortho(-1, 1, -1, 1, 1, 10);
 	
-	//Loop mientras no se cierra la ventana
-	sp.init(); //inicializar esfera
-	sp.load();//enviar la esfera al shader
+	sp.init(); // Genero los vértices de la esfera.
+	sp.load(); // Cargo la esfera para reutilizarla en las articulaciones.
 
-	glm::mat4 model(1.0);//Inicializar matriz de Modelo 4x4
-	glm::mat4 modelaux(1.0);//Inicializar matriz de Modelo 4x4
-	glm::mat4 modelaux2(1.0);
+	glm::mat4 model(1.0); // Transformación de la pieza que voy a dibujar.
+	glm::mat4 modelaux(1.0); // Transformación de la articulación actual, sin escalar la pieza.
+	glm::mat4 modelaux2(1.0); // Base de la que parten las ruedas, el brazo o las partes de la sonda.
 
-	glm::vec3 color = glm::vec3(0.0f,0.0f,0.0f); //inicializar Color para enviar a variable Uniform;
-	bool mostrarSonda = false;
+	glm::vec3 color = glm::vec3(0.0f,0.0f,0.0f); // Color RGB que envío al shader para cada pieza.
+	bool mostrarSonda = false; // false muestra el rover; true muestra la sonda.
 
+	// Actualizo los controles y vuelvo a dibujar mientras la ventana esté abierta.
 	while (!mainWindow.getShouldClose())
 	{
 
@@ -366,7 +352,7 @@ int main()
 		lastTime = now;
 		//Recibir eventos del usuario
 		glfwPollEvents();
-		// Cambio de ejercicio sin abrir otra ventana ni usar un segundo main.
+		// F1 y F2 seleccionan el modelo y colocan la cámara frente a él.
 		if (mainWindow.getsKeys()[GLFW_KEY_F1]) {
 			mostrarSonda = false;
 			camera = Camera(glm::vec3(-12.0f, 13.0f, 18.0f), glm::vec3(0, 1, 0), -63.435f, -15.885f, 0.3f, 0.3f);
@@ -381,7 +367,7 @@ int main()
 
 		//Limpiar la ventana
 		glClearColor(0.09f, 0.12f, 0.17f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Se agrega limpiar el buffer de profundidad
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Limpio el color y la profundidad del cuadro anterior.
 		shaderList[0].useShader();
 		uniformModel = shaderList[0].getModelLocation();
 		uniformProjection = shaderList[0].getProjectLocation();
@@ -395,41 +381,33 @@ int main()
 		// Marco las uniones con esferas. Guardo cada unión antes de escalar la pieza.
 		model = glm::mat4(1.0);
 	
-		model = glm::translate(model, glm::vec3(0.0f, 4.0f, -4.0f)); //NOS POSICIONAMOS EN EL CENTRO DEL OBJETO X AMARILLA 
-		modelaux = model; //guardamos la matriz de modelo para que la base se mueva con el objeto
+		model = glm::translate(model, glm::vec3(0.0f, 4.0f, -4.0f)); // Coloco el origen del rover en la escena.
+		modelaux = model; // Guardo este origen para construir la cabina y la base desde el mismo punto.
 		// Cabina de 8 por 4 por 6 unidades, conectada a la base.
-		model = glm::translate(model, glm::vec3(1.0f, 2.0f, 0.0f));//PARA LLEGAR AL CENTRO DE LA CABINA a PARTIR DEL ORIGEN
+		model = glm::translate(model, glm::vec3(1.0f, 2.0f, 0.0f)); // Llego al centro de la cabina desde el origen del rover.
 		model = glm::scale(model, glm::vec3(8.0f, 4.0f, 6.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//la línea de proyección solo se manda una vez a menos que en tiempo de ejecución se programe cambio entre proyección ortogonal y perspectiva
+		// Envío la proyección y la vista que usa el shader para dibujar la cabina.
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 		color = glm::vec3(0.76f, 0.79f, 0.82f);
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
-		meshList[0]->RenderMesh(); //dibuja cubo y pirámide triangular
-		//meshList[3]->RenderMeshGeometry(); //dibuja las figuras geométricas cilindro, cono, pirámide base cuadrangular
-		//sp.render(); //dibuja esfera
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); // Envío el color de esta pieza.
+		meshList[0]->RenderMesh(); // Dibujo la cabina con el cubo.
 
 
-		// BASE
-		// model = glm::mat4(1.0); // Recupero modelaux para conservar el origen del rover.
-		/*En su lugar usamos la matriz auxiliar modelaux para que la base se mueva con el objeto.
-		Lo que debemos de saber es: de las transformaciones geométricas que se aplican a la cabina y 
-		cuales queremos que se apliquen a la base. En este caso, sólo queremos que se aplique la traslación del origen, no la rotación ni el escalado de la cabina. 
-		Por lo tanto, debemos de guardar en modelaux sólo la traslación del origen y luego aplicarla a la base.
-		*/
+		// Recupero el origen guardado para que la base no herede la escala de la cabina.
 		model = modelaux;
-		//NOS POSICIONAMOS EN EL CENTRO DE LA BASE
+		// Bajo al centro de la base y guardo su posición antes de darle tamaño.
 		model = glm::translate(model, glm::vec3(0.0f, -0.75f, 0.0f));
-		modelaux = model; //guardamos la matriz de modelo para conectar los siguientes objetos a la base
+		modelaux = model; // Desde esta matriz conecto las ruedas y el brazo.
 		model = glm::scale(model, glm::vec3(10.0f, 1.5f, 8.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		color = glm::vec3(0.29f, 0.35f, 0.41f);
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); //para cambiar el color del objetos
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color)); // Envío el color de la base.
 		meshList[0]->RenderMesh();
 		
 		model = modelaux;
-		modelaux2 = model; //guardamos la matriz de modelo para conectar los siguientes objetos a la base
+		modelaux2 = model;
 		// modelaux2 conserva la base sin su escala. Regreso aquí al iniciar cada rama.
 		// modelaux guarda la articulación actual y model se usa para dibujar cada pieza.
 		// No heredo la escala de un cilindro a la esfera o a la siguiente articulación.
@@ -496,7 +474,7 @@ int main()
 					glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 					color = glm::vec3(0.62f, 0.68f, 0.72f);
 					glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-					meshList[2]->RenderMesh(); // El cilindro ahora usa índices de triángulos.
+					meshList[2]->RenderMesh(); // Dibujo la barra que sostiene la pata frontal.
 
 					model = modelaux;
 					model = glm::translate(model, glm::vec3(-2.9f, -0.5f, 0.0f));
@@ -538,8 +516,8 @@ int main()
 					sp.render();
 
 					model = modelaux;
-					// Formo una L inclinada con dos cilindros perpendiculares, sin nuevas mallas.
-					// Las longitudes conservan el centro anterior de la rueda: (-1.9,-1.85) o (2.35,-1.85).
+					// Formo una L inclinada con dos cilindros perpendiculares.
+					// Sus extremos llegan al centro de cada rueda: (-1.9,-1.85) o (2.35,-1.85), respecto a la unión.
 					model = glm::translate(model, glm::vec3(rueda == 1 ? -0.31196325f : 0.48071325f, rueda == 1 ? 0.18011207f : 0.27753992f, 0.0f));
 					model = glm::rotate(model, glm::radians(rueda == 1 ? 60.0f : -60.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 					model = glm::scale(model, glm::vec3(0.18f, rueda == 1 ? 0.72044827f : 1.11015970f, 0.18f));
@@ -562,6 +540,7 @@ int main()
 
 				// Giro alrededor del centro de esta llanta, antes de escalarla.
 				// Rin, radios y centro heredan el mismo giro; la suspensión no lo hereda.
+				// numeroRueda identifica las seis llantas: de 0 a 2 en un lado y de 3 a 5 en el otro.
 				int numeroRueda = (lado == -1 ? 0 : 3) + rueda;
 				modelaux = glm::rotate(modelaux, glm::radians(mainWindow.getrueda(numeroRueda)), glm::vec3(0.0f, 0.0f, 1.0f));
 				// Llanta, rin y centro: tres instancias del cilindro, orientadas sobre Z.

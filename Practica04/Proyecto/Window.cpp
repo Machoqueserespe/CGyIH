@@ -89,12 +89,10 @@ int Window::Initialise()
 		return 1;
 	}
 
-	glEnable(GL_DEPTH_TEST); //HABILITAR BUFFER DE PROFUNDIDAD
-							 // Asignar valores de la ventana y coordenadas
-							 
-							 //Asignar Viewport
+	glEnable(GL_DEPTH_TEST); // Uso la profundidad para ocultar las superficies que quedan detrás.
+	// El área de dibujo ocupa el tamaño real del framebuffer.
 	glViewport(0, 0, bufferWidth, bufferHeight);
-	//Callback para detectar que se está usando la ventana
+	// Asocio la ventana con este objeto para consultarlo desde los eventos del teclado y el ratón.
 	glfwSetWindowUserPointer(mainWindow, this);
 	return 0; // Indico que la ventana se creó correctamente.
 }
@@ -129,7 +127,8 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	}
 
 	
-	// Registro el giro al presionar o mantener la tecla, no al soltarla.
+	// paso vale 5 grados; con Shift vale -5 para girar en sentido contrario.
+	// Aplico el giro al presionar o mantener la tecla, no al soltarla.
 	GLfloat paso = (mode & GLFW_MOD_SHIFT) ? -5.0f : 5.0f;
 	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
@@ -143,7 +142,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		theWindow->rotaz += paso;
 	}
-	// Uso los seis controles existentes. Shift invierte el giro y limito el recorrido.
+	// Limito cada articulación para que el brazo y la suspensión no giren sin tope.
 	if (key == GLFW_KEY_F && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
 		theWindow->articulacion1 += paso;
@@ -213,7 +212,6 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	if (key == GLFW_KEY_D && action == GLFW_PRESS)
 	{
 		const char* key_name = glfwGetKeyName(GLFW_KEY_D, 0);
-		//printf("se presiono la tecla: %s\n",key_name);
 	}
 
 	if (key >= 0 && key < 1024)
@@ -221,12 +219,10 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 		if (action == GLFW_PRESS)
 		{
 			theWindow->keys[key] = true;
-			//printf("se presiono la tecla %d'\n", key);
 		}
 		else if (action == GLFW_RELEASE)
 		{
 			theWindow->keys[key] = false;
-			//printf("se solto la tecla %d'\n", key);
 		}
 	}
 }
