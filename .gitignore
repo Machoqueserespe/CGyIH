@@ -1,0 +1,11 @@
+.DS_Store
+.vs/
+**/obj/
+**/Debug/
+*.obj
+*.ilk
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+Practica04/Proyecto/x64/

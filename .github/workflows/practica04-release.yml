@@ -1,0 +1,40 @@
+name: Compilar practica 04 en Windows Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Practica04/Proyecto/**'
+      - '.github/workflows/practica04-release.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compilar Release x64
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $msbuild = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
+          if (-not $msbuild) { throw 'No se encontro MSBuild.' }
+          & $msbuild Practica04/Proyecto/Rover.sln /m /t:Rebuild /p:Configuration=Release /p:Platform=x64 /verbosity:minimal /nologo
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($file in @('Practica04/Proyecto/x64/Release/Rover.exe', 'Practica04/Proyecto/x64/Release/Rover.pdb')) {
+            if (!(Test-Path $file) -or (Get-Item $file).Length -eq 0) { throw "Falta el archivo $file" }
+            Get-FileHash $file -Algorithm SHA256
+          }
+      - name: Guardar ejecutable y simbolos
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: P04-422022019
+          path: |
+            Practica04/Proyecto/x64/Release/Rover.exe
+            Practica04/Proyecto/x64/Release/Rover.pdb
+          if-no-files-found: error
+          retention-days: 14
