@@ -5,6 +5,8 @@ extern GLfloat giroEsquina1, giroEsquina2, giroEsquina3, giroEsquina4;
 extern GLfloat giroEsquina5, giroEsquina6, giroEsquina7, giroEsquina8;
 extern GLfloat sateliteX, sateliteY, sateliteZ;
 extern GLfloat giroPanel1, giroPanel2, giroPanel3, giroPanel4;
+// Manejo las cuatro articulaciones del brazo sin cambiar las patas ni los otros modelos.
+extern GLfloat giroBaseBrazo, giroBrazo1, giroBrazo2, giroPinza;
 
 Window::Window()
 {
@@ -137,6 +139,32 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		theWindow->rotaz += 10.0;
 	}
+	// Uso F1 a F4 para el brazo; limito cada articulación a 45 grados por sentido.
+	if (key == GLFW_KEY_F1 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		giroBaseBrazo += (mode & GLFW_MOD_SHIFT) ? -5.0f : 5.0f;
+		if (giroBaseBrazo > 45.0f) giroBaseBrazo = 45.0f;
+		if (giroBaseBrazo < -45.0f) giroBaseBrazo = -45.0f;
+	}
+	if (key == GLFW_KEY_F2 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		giroBrazo1 += (mode & GLFW_MOD_SHIFT) ? -5.0f : 5.0f;
+		if (giroBrazo1 > 45.0f) giroBrazo1 = 45.0f;
+		if (giroBrazo1 < -45.0f) giroBrazo1 = -45.0f;
+	}
+	if (key == GLFW_KEY_F3 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		giroBrazo2 += (mode & GLFW_MOD_SHIFT) ? -5.0f : 5.0f;
+		if (giroBrazo2 > 45.0f) giroBrazo2 = 45.0f;
+		if (giroBrazo2 < -45.0f) giroBrazo2 = -45.0f;
+	}
+	if (key == GLFW_KEY_F4 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		giroPinza += (mode & GLFW_MOD_SHIFT) ? -5.0f : 5.0f;
+		if (giroPinza > 45.0f) giroPinza = 45.0f;
+		if (giroPinza < -45.0f) giroPinza = -45.0f;
+	}
+
 	// F mueve solo esta pata; Shift invierte el sentido. No cuento la liberación de la tecla.
 	if (key == GLFW_KEY_F && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{

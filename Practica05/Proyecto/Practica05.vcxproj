@@ -50,14 +50,17 @@
     <ClCompile Include="Model.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
     <ClCompile Include="Mesh_tn.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
     <ClCompile Include="Shader_m.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
+    <ClCompile Include="Skybox.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" /><ClInclude Include="Camera.h" />
     <ClInclude Include="Model.h" /><ClInclude Include="Mesh_tn.h" /><ClInclude Include="Shader_m.h" />
+    <ClInclude Include="Skybox.h" /><ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_m.vert" /><None Include="shaders\shader_m.frag" />
-    <ArchivosEjecucion Include="glew32.dll;assimp-vc143-mt.dll;Models\**\*;shaders\**\*" />
+    <None Include="shaders\skybox.vert" /><None Include="shaders\skybox.frag" />
+    <ArchivosEjecucion Include="glew32.dll;assimp-vc143-mt.dll;Models\**\*;shaders\**\*;Textures\**\*" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopiarArchivosEjecucion" AfterTargets="Build">

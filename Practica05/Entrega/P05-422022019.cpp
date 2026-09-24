@@ -27,7 +27,7 @@ Entrega: 26/09/2026
 #include "Camera.h"
 // El rover se carga desde OBJ; no genero esferas para este ejercicio.
 #include"Model.h"
-// Uso un fondo liso para distinguir las piezas del rover.
+#include "Skybox.h"
 
 const float toRadians = 3.14159265f / 180.0f;
 //float angulocola = 0.0f;
@@ -39,7 +39,7 @@ std::vector<Shader> shaderList;
 
 Camera camera;
 //Lista de Modelos a importar
-Model Cuerpo_M, Brazo_M;
+Model Cuerpo_M, BaseBrazo_M, Brazo1_M, Brazo2_M, Pinza_M;
 Model PataDD_M, PataDI_M, PataMD_M, PataMI_M, PataTD_M, PataTI_M;
 Model RuedaDD_M, RuedaDI_M, RuedaMD_M, RuedaMI_M, RuedaTD_M, RuedaTI_M;
  
@@ -69,6 +69,14 @@ Model SatelitePanel3CeldasB_M;
 Model SatelitePanel4Soporte_M;
 Model SatelitePanel4CeldasA_M;
 Model SatelitePanel4CeldasB_M;
+
+// Conservo el Skybox y sus seis imágenes para dibujar el fondo de la escena.
+Skybox skybox;
+// Guardo un giro por articulación; los tramos siguientes heredan ese movimiento.
+GLfloat giroBaseBrazo = 0.0f;
+GLfloat giroBrazo1 = 0.0f;
+GLfloat giroBrazo2 = 0.0f;
+GLfloat giroPinza = 0.0f;
 
 // Guardo un ángulo por esquina; cada una gira alrededor del centro del Holocrón.
 GLfloat giroEsquina1 = 0.0f;
@@ -167,56 +175,119 @@ int main()
 	glBindVertexArray(vaoValidacion);
 	CreateShaders();
 	glBindVertexArray(0);
-	glDeleteVertexArrays(1, &vaoValidacion);
 
 	// Alejo la cámara para mostrar los tres modelos al mismo tiempo, sin deformarlos.
 	camera = Camera(glm::vec3(4.5f, 7.0f, 18.0f), glm::vec3(0.0f, 1.0f, 0.0f), -104.0f, -20.7f, 0.3f, 0.3f);
-	// Cargo el cuerpo, el brazo y las seis ruedas por separado.
+	// Cargo el cuerpo, los cuatro segmentos del brazo y las seis ruedas por separado.
+	// Inicializo cada modelo con Model() antes de cargar su archivo.
 	// Las patas también tienen su archivo para que cada rueda herede el giro de su soporte.
+	Cuerpo_M = Model();
 	Cuerpo_M.LoadModel("Models/Cuerpo.obj");
-	Brazo_M.LoadModel("Models/Brazo.obj");
+	BaseBrazo_M = Model();
+	BaseBrazo_M.LoadModel("Models/BaseBrazo.obj");
+	Brazo1_M = Model();
+	Brazo1_M.LoadModel("Models/Brazo1.obj");
+	Brazo2_M = Model();
+	Brazo2_M.LoadModel("Models/Brazo2.obj");
+	Pinza_M = Model();
+	Pinza_M.LoadModel("Models/Pinza.obj");
+	PataDD_M = Model();
 	PataDD_M.LoadModel("Models/PataDD.obj");
+	RuedaDD_M = Model();
 	RuedaDD_M.LoadModel("Models/RuedaDD.obj");
+	PataDI_M = Model();
 	PataDI_M.LoadModel("Models/PataDI.obj");
+	RuedaDI_M = Model();
 	RuedaDI_M.LoadModel("Models/RuedaDI.obj");
+	PataMD_M = Model();
 	PataMD_M.LoadModel("Models/PataMD.obj");
+	RuedaMD_M = Model();
 	RuedaMD_M.LoadModel("Models/RuedaMD.obj");
+	PataMI_M = Model();
 	PataMI_M.LoadModel("Models/PataMI.obj");
+	RuedaMI_M = Model();
 	RuedaMI_M.LoadModel("Models/RuedaMI.obj");
+	PataTD_M = Model();
 	PataTD_M.LoadModel("Models/PataTD.obj");
+	RuedaTD_M = Model();
 	RuedaTD_M.LoadModel("Models/RuedaTD.obj");
+	PataTI_M = Model();
 	PataTI_M.LoadModel("Models/PataTI.obj");
+	RuedaTI_M = Model();
 	RuedaTI_M.LoadModel("Models/RuedaTI.obj");
 
 	// Importo las piezas separadas y conservo la jerarquía mediante sus matrices.
+	HolocronCuerpo_M = Model();
 	HolocronCuerpo_M.LoadModel("Models/HolocronCuerpo.obj");
+	HolocronInterior_M = Model();
 	HolocronInterior_M.LoadModel("Models/HolocronInterior.obj");
+	HolocronCristal_M = Model();
 	HolocronCristal_M.LoadModel("Models/HolocronCristal.obj");
+	HolocronEsquina1_M = Model();
 	HolocronEsquina1_M.LoadModel("Models/HolocronEsquina1.obj");
+	HolocronEsquina2_M = Model();
 	HolocronEsquina2_M.LoadModel("Models/HolocronEsquina2.obj");
+	HolocronEsquina3_M = Model();
 	HolocronEsquina3_M.LoadModel("Models/HolocronEsquina3.obj");
+	HolocronEsquina4_M = Model();
 	HolocronEsquina4_M.LoadModel("Models/HolocronEsquina4.obj");
+	HolocronEsquina5_M = Model();
 	HolocronEsquina5_M.LoadModel("Models/HolocronEsquina5.obj");
+	HolocronEsquina6_M = Model();
 	HolocronEsquina6_M.LoadModel("Models/HolocronEsquina6.obj");
+	HolocronEsquina7_M = Model();
 	HolocronEsquina7_M.LoadModel("Models/HolocronEsquina7.obj");
+	HolocronEsquina8_M = Model();
 	HolocronEsquina8_M.LoadModel("Models/HolocronEsquina8.obj");
+	SateliteCuerpoOro_M = Model();
 	SateliteCuerpoOro_M.LoadModel("Models/SateliteCuerpoOro.obj");
+	SateliteCuerpoGris_M = Model();
 	SateliteCuerpoGris_M.LoadModel("Models/SateliteCuerpoGris.obj");
+	SateliteCuerpoAzul_M = Model();
 	SateliteCuerpoAzul_M.LoadModel("Models/SateliteCuerpoAzul.obj");
+	SatelitePanel1Soporte_M = Model();
 	SatelitePanel1Soporte_M.LoadModel("Models/SatelitePanel1Soporte.obj");
+	SatelitePanel1CeldasA_M = Model();
 	SatelitePanel1CeldasA_M.LoadModel("Models/SatelitePanel1CeldasA.obj");
+	SatelitePanel1CeldasB_M = Model();
 	SatelitePanel1CeldasB_M.LoadModel("Models/SatelitePanel1CeldasB.obj");
+	SatelitePanel2Soporte_M = Model();
 	SatelitePanel2Soporte_M.LoadModel("Models/SatelitePanel2Soporte.obj");
+	SatelitePanel2CeldasA_M = Model();
 	SatelitePanel2CeldasA_M.LoadModel("Models/SatelitePanel2CeldasA.obj");
+	SatelitePanel2CeldasB_M = Model();
 	SatelitePanel2CeldasB_M.LoadModel("Models/SatelitePanel2CeldasB.obj");
+	SatelitePanel3Soporte_M = Model();
 	SatelitePanel3Soporte_M.LoadModel("Models/SatelitePanel3Soporte.obj");
+	SatelitePanel3CeldasA_M = Model();
 	SatelitePanel3CeldasA_M.LoadModel("Models/SatelitePanel3CeldasA.obj");
+	SatelitePanel3CeldasB_M = Model();
 	SatelitePanel3CeldasB_M.LoadModel("Models/SatelitePanel3CeldasB.obj");
+	SatelitePanel4Soporte_M = Model();
 	SatelitePanel4Soporte_M.LoadModel("Models/SatelitePanel4Soporte.obj");
+	SatelitePanel4CeldasA_M = Model();
 	SatelitePanel4CeldasA_M.LoadModel("Models/SatelitePanel4CeldasA.obj");
+	SatelitePanel4CeldasB_M = Model();
 	SatelitePanel4CeldasB_M.LoadModel("Models/SatelitePanel4CeldasB.obj");
 
+	// Creo el Skybox con las seis texturas del ejemplo, en el mismo orden.
+	std::vector<std::string> skyboxFaces;
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
+	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
+	// Aplico la misma orientación desde la primera imagen del cubo.
+	stbi_set_flip_vertically_on_load(true);
+	// Mantengo un VAO activo también durante la validación del shader del Skybox.
+	glBindVertexArray(vaoValidacion);
+	skybox = Skybox(skyboxFaces);
+	glBindVertexArray(0);
+	glDeleteVertexArrays(1, &vaoValidacion);
+
 	printf("F/G/H/J/K/L: patas DD/DI/MD/MI/TD/TI. Shift invierte el giro. Limites: -45 y 45 grados.\n");
+	printf("F1/F2/F3/F4: base del brazo, primer tramo, segundo tramo y pinza. Shift invierte el giro.\n");
 	printf("W/A/S/D y mouse: camara. Esc: salir.\n");
 	printf("1-8: esquinas del Holocron. X/Y/Z: traslacion del satelite.\n");
 	printf("U/I/O/P: paneles +X/-X/+Z/-Z. Shift invierte todos los movimientos.\n");
@@ -246,6 +317,8 @@ int main()
 		glClearColor(0.12f, 0.16f, 0.22f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Dibujo el fondo antes de los modelos; la cámara cambia su orientación.
+		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
 
 		shaderList[0].UseShader();
 		uniformModel = shaderList[0].GetModelLocation();
@@ -265,9 +338,10 @@ int main()
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		meshListModel[2]->RenderMeshModel();
 
-		// La transformación del cuerpo es la raíz de toda la jerarquía.
+		// Uso el centro del cuerpo como origen local de toda la jerarquía del rover.
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-6.5f, -2.0f, -1.5f));
+		// Compenso el cambio de origen para conservar la posición del rover en la escena.
+		model = glm::translate(model, glm::vec3(-7.162216f, 0.309026f, -1.5f));
 		// La escala es uniforme para conservar las proporciones del modelo.
 		model = glm::scale(model, glm::vec3(0.45f, 0.45f, 0.45f));
 		color = glm::vec3(0.78f, 0.84f, 0.90f);
@@ -275,21 +349,46 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Cuerpo_M.RenderModel();
 
-		// El brazo parte del cuerpo y se coloca en su unión sobre la cabina.
+		// Llevo la base del brazo a su unión, medida desde el centro del cuerpo.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(1.701f, 4.794f, -1.1f));
+		modelaux = glm::translate(modelaux, glm::vec3(3.172745f, -0.337018f, -1.100001f));
+		modelaux = glm::rotate(modelaux, giroBaseBrazo * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		color = glm::vec3(0.65f, 0.72f, 0.80f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelaux));
+		BaseBrazo_M.RenderModel();
+
+		// Conservo la matriz de la base y avanzo al eje del primer tramo.
+		modelaux = glm::translate(modelaux, glm::vec3(0.0f, 1.187502f, 0.0f));
+		modelaux = glm::rotate(modelaux, giroBrazo1 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.92f, 0.64f, 0.20f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelaux));
-		Brazo_M.RenderModel();
+		Brazo1_M.RenderModel();
+
+		// El segundo tramo hereda los giros anteriores y gira desde el codo.
+		modelaux = glm::translate(modelaux, glm::vec3(2.534587f, 2.556534f, 0.000001f));
+		modelaux = glm::rotate(modelaux, giroBrazo2 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		color = glm::vec3(0.82f, 0.87f, 0.93f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelaux));
+		Brazo2_M.RenderModel();
+
+		// Coloco la pinza en la muñeca; su giro no modifica los tramos anteriores.
+		modelaux = glm::translate(modelaux, glm::vec3(-2.647493f, 2.945179f, 0.189120f));
+		modelaux = glm::rotate(modelaux, giroPinza * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		color = glm::vec3(0.92f, 0.64f, 0.20f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelaux));
+		Pinza_M.RenderModel();
 
 		// Cada pata empieza de nuevo desde model, así su giro no afecta a las demás.
-		// Traslado al pivote y después giro en Z, perpendicular al costado del rover.
+		// Mido cada pivote desde el nuevo centro del cuerpo y después giro en Z.
 		// La rueda se coloca desde esa matriz: acompaña a la pata sin separarse.
 
 		// Pata y rueda delantera derecha.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(2.1000f, 4.2080f, -3.0660f));
+		modelaux = glm::translate(modelaux, glm::vec3(3.571591f, -0.923169f, -3.0660f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion1() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -304,7 +403,7 @@ int main()
 
 		// Pata y rueda delantera izquierda.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(2.1000f, 4.2080f, 3.0540f));
+		modelaux = glm::translate(modelaux, glm::vec3(3.571591f, -0.923169f, 3.0540f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion2() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -319,7 +418,7 @@ int main()
 
 		// Pata y rueda media derecha.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(-2.5360f, 3.5770f, -2.8590f));
+		modelaux = glm::translate(modelaux, glm::vec3(-1.064409f, -1.554169f, -2.8590f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion3() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -334,7 +433,7 @@ int main()
 
 		// Pata y rueda media izquierda.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(-2.5360f, 3.5770f, 2.8590f));
+		modelaux = glm::translate(modelaux, glm::vec3(-1.064409f, -1.554169f, 2.8590f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion4() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -349,7 +448,7 @@ int main()
 
 		// Pata y rueda trasera derecha.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(-3.5360f, 3.5770f, -2.8590f));
+		modelaux = glm::translate(modelaux, glm::vec3(-2.064409f, -1.554169f, -2.8590f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion5() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -364,7 +463,7 @@ int main()
 
 		// Pata y rueda trasera izquierda.
 		modelaux = model;
-		modelaux = glm::translate(modelaux, glm::vec3(-3.5360f, 3.5770f, 2.8590f));
+		modelaux = glm::translate(modelaux, glm::vec3(-2.064409f, -1.554169f, 2.8590f));
 		modelaux = glm::rotate(modelaux, mainWindow.getarticulacion6() * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 		color = glm::vec3(0.42f, 0.60f, 0.70f);
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
