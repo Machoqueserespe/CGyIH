@@ -9,3 +9,5 @@
 *.VC.db
 *.VC.VC.opendb
 Practica04/Proyecto/x64/
+Practica05/Proyecto/x64/
+!Practica05/Proyecto/Models/*.obj

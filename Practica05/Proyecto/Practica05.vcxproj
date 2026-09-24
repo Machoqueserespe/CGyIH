@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{527885D3-DA59-4D9D-BAE9-22BF05220505}</ProjectGuid>
+    <RootNamespace>Practica05</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)x64\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)x64\$(Configuration)\obj\</IntDir>
+    <TargetName>P05-422022019</TargetName>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel><SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem><GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="P05-422022019.cpp" />
+    <ClCompile Include="Window.cpp" /><ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Model.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
+    <ClCompile Include="Mesh_tn.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
+    <ClCompile Include="Shader_m.cpp"><AdditionalOptions>/source-charset:windows-1252 /execution-charset:utf-8</AdditionalOptions></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Window.h" /><ClInclude Include="Camera.h" />
+    <ClInclude Include="Model.h" /><ClInclude Include="Mesh_tn.h" /><ClInclude Include="Shader_m.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shader_m.vert" /><None Include="shaders\shader_m.frag" />
+    <ArchivosEjecucion Include="glew32.dll;assimp-vc143-mt.dll;Models\**\*;shaders\**\*" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="CopiarArchivosEjecucion" AfterTargets="Build">
+    <Copy SourceFiles="@(ArchivosEjecucion)" DestinationFiles="@(ArchivosEjecucion->'$(OutDir)%(Identity)')" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
